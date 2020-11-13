@@ -1,10 +1,10 @@
-import { CanEmitEvents } from './EventEmitter.js';
 import { Paint } from './Paint.js';
 
 
 export function start() {
     const canvas = document.querySelector('#canvas');
     const paint = new Paint(canvas);
+    paint.fromLocalStorage();
 
     let colorButtons = document.querySelectorAll('.color');
     for (let i = 0; i < colorButtons.length; i++) {
