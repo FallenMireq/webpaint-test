@@ -78,7 +78,6 @@ export function start() {
         function mouseup() {
             document.removeEventListener('mousemove', mousemove);
             document.removeEventListener('mouseup', mouseup);
-            paint.save();
         }
 
         document.addEventListener('mousemove', mousemove);
@@ -86,9 +85,19 @@ export function start() {
     });
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'z' && e.ctrlKey) {
+        if (e.ctrlKey && e.key === 'z') {
             e.preventDefault();
             paint.undo();
+        }
+
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            paint.toLocalStorage();
+        }
+
+        if (e.ctrlKey && e.key === 'l') {
+            e.preventDefault();
+            paint.fromLocalStorage();
         }
     });
 }

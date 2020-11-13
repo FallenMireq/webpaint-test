@@ -1,6 +1,7 @@
 import { EventEmitter } from './EventEmitter.js';
 
 export class Paint extends EventEmitter {
+    /** @param {HTMLCanvasElement} canvas */
     constructor(canvas) {
         super();
         this.canvas = canvas;
@@ -35,8 +36,33 @@ export class Paint extends EventEmitter {
         this.ctx.stroke();
     }
 
-    save() {
-        let imageData = this.ctx.getImageData(0, 0, 300, 150);
-        console.log(imageData.data);
+    getDataUrl() {
+        return this.canvas.toDataURL('image/png', 1);
+    }
+
+    putDataUrl(dataUrl) {
+        return new Promise((resolve) => {
+            let img = new Image();
+            img.onload = () => {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(img, 0, 0);
+                resolve();
+            }
+            img.src = dataUrl;
+        });
+    }
+
+    async toLocalStorage(key = 'webpaint.image') {
+        let data = this.getDataUrl();
+        localStorage.setItem(key, data);
+        return this;
+    }
+
+    async fromLocalStorage(key = 'webpaint.image') {
+        let dataUrl = localStorage.getItem(key);
+        if (dataUrl) {
+            await this.putDataUrl(dataUrl);
+        }
+        return this;
     }
 }
