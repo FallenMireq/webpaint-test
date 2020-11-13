@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1" />
+    <title>WebPaint</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+    <div class="app">
+        <canvas class="canvas" id="canvas"></canvas>
+
+        <div class="toolbox">
+            <div class="thicknesses">
+                <div class="thickness" data-thickness="1">
+                    <i></i>
+                </div>
+                <div class="thickness" data-thickness="5">
+                    <i></i>
+                </div>
+                <div class="thickness" data-thickness="25">
+                    <i></i>
+                </div>
+            </div>
+            <div class="palette">
+                <div class="color" data-color="#fff"></div>
+                <div class="color" data-color="#000"></div>
+                <div class="color" data-color="#f00"></div>
+                <div class="color" data-color="#0f0"></div>
+                <div class="color" data-color="#00f"></div>
+                <div class="color" data-color="transparent"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { start } from './index.js';
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            start();
+        } else {
+            document.addEventListener('DOMContentLoaded', () => start());
+        }
+    </script>
+</body>
+</html>
