@@ -9,7 +9,7 @@ export class EventEmitter {
             handlers = [];
             this.handlers.set(event, handlers);
         }
-        
+
         handlers.push(fn);
         return this;
     }
@@ -20,16 +20,16 @@ export class EventEmitter {
             let index = handlers.indexOf(fn);
             handlers.splice(index, 1);
         }
-        
+
         return this;
     }
 
     trigger(event, data) {
         let handlers = this.handlers.get(event);
         if (handlers) {
-            handlers.forEach(fn => fn(data));
+            handlers.forEach((fn) => fn(data));
         }
-        
+
         return this;
     }
 }
