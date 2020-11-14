@@ -8,7 +8,12 @@
 </head>
 <body>
     <div class="app">
-        <canvas class="canvas" id="canvas"></canvas>
+        <div class="paint">
+            <canvas class="paint__canvas paint__picture-canvas" id="picture-canvas"></canvas>
+            <canvas class="paint__canvas paint__stash-canvas" id="stash-canvas"></canvas>
+            <canvas class="paint__canvas paint__editor-canvas" id="editor-canvas"></canvas>
+        </div>
+        
 
         <div class="toolbox">
             <div class="thicknesses">

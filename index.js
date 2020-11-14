@@ -1,19 +1,21 @@
-import { Paint } from './Paint.js';
-
+import { Paint } from './Paint/Paint.js';
 
 export function start() {
-    const canvas = document.querySelector('#canvas');
-    const paint = new Paint(canvas);
+    const pictureCanvas = document.querySelector('#picture-canvas');
+    const stashCanvas = document.querySelector('#stash-canvas');
+    const editorCanvas = document.querySelector('#editor-canvas');
+    const paint = new Paint(pictureCanvas, stashCanvas, editorCanvas);
     paint.fromLocalStorage();
+    paint.editorLayer.setTool('brush');
 
     let colorButtons = document.querySelectorAll('.color');
     for (let i = 0; i < colorButtons.length; i++) {
         let btn = colorButtons.item(i);
         let color = btn.getAttribute('data-color');
         btn.style.color = color;
-        btn.addEventListener('click', e => paint.setColor(color));
+        btn.addEventListener('click', (e) => paint.options.setColor(color));
 
-        if (color === paint.color) {
+        if (color === paint.options.color) {
             btn.classList.add('active');
         }
     }
@@ -25,57 +27,66 @@ export function start() {
         let sample = btn.querySelector('i');
         sample.style.width = `${thickness}px`;
         sample.style.height = `${thickness}px`;
-        btn.addEventListener('click', e => paint.setThickness(thickness));
+        btn.addEventListener('click', (e) =>
+            paint.options.setThickness(thickness)
+        );
 
-        if (thickness === paint.thickness) {
+        if (thickness === paint.options.thickness) {
             btn.classList.add('active');
         }
     }
 
-    paint.on('color', (color) => {
+    paint.options.on('color', (color) => {
         let activeButtons = document.querySelectorAll('.color.active');
         for (let i = 0; i < activeButtons.length; i++) {
             let btn = activeButtons.item(i);
             btn.classList.remove('active');
         }
 
-        let buttons = document.querySelectorAll(`.color[data-color="${color}"]`);
+        let buttons = document.querySelectorAll(
+            `.color[data-color="${color}"]`
+        );
         for (let i = 0; i < buttons.length; i++) {
             let btn = buttons.item(i);
             btn.classList.add('active');
         }
     });
 
-    paint.on('thickness', (thickness) => {
+    paint.options.on('thickness', (thickness) => {
         let activeButtons = document.querySelectorAll('.thickness.active');
         for (let i = 0; i < activeButtons.length; i++) {
             let btn = activeButtons.item(i);
             btn.classList.remove('active');
         }
 
-        let buttons = document.querySelectorAll(`.thickness[data-thickness="${thickness}"]`);
+        let buttons = document.querySelectorAll(
+            `.thickness[data-thickness="${thickness}"]`
+        );
         for (let i = 0; i < buttons.length; i++) {
             let btn = buttons.item(i);
             btn.classList.add('active');
         }
     });
 
-    canvas.addEventListener('mousedown', (e) => {
-        let rect = canvas.getBoundingClientRect();
+    editorCanvas.addEventListener('mousedown', (e) => {
+        let rect = editorCanvas.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
-        paint.line(x, y, x, y);
+        paint.editorLayer.start(x, y);
 
         function mousemove(e) {
-            let rect = canvas.getBoundingClientRect();
-            let x2 = e.clientX - rect.left;
-            let y2 = e.clientY - rect.top;
-            paint.line(x, y, x2, y2);
-            x = x2;
-            y = y2;
+            let rect = editorCanvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            paint.editorLayer.move(x, y);
         }
 
-        function mouseup() {
+        function mouseup(e) {
+            let rect = editorCanvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            paint.editorLayer.stop(x, y);
+
             document.removeEventListener('mousemove', mousemove);
             document.removeEventListener('mouseup', mouseup);
         }
@@ -84,14 +95,15 @@ export function start() {
         document.addEventListener('mouseup', mouseup);
     });
 
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'z') {
             e.preventDefault();
-            paint.undo();
+            paint.stashLayer.undo();
         }
 
         if (e.ctrlKey && e.key === 's') {
             e.preventDefault();
+            paint.commitStash();
             paint.toLocalStorage();
         }
 
@@ -99,5 +111,13 @@ export function start() {
             e.preventDefault();
             paint.fromLocalStorage();
         }
+    });
+
+    window.addEventListener('storage', (e) => {
+        if (e.key != 'webpaint.image') {
+            return;
+        }
+
+        paint.fromLocalStorage();
     });
 }
