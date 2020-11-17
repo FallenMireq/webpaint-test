@@ -17,6 +17,11 @@ export class Paint extends EventEmitter {
         this.stashLayer.commit();
     }
 
+    clear() {
+        this.pictureLayer.clear();
+        this.stashLayer.clear();
+    }
+
     async toLocalStorage(key = 'webpaint.image') {
         let data = this.pictureLayer.getDataUrl();
         localStorage.setItem(key, data);

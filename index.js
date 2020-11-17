@@ -96,20 +96,21 @@ export function start() {
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'z') {
+        if (e.key === 'z') {
             e.preventDefault();
             paint.stashLayer.undo();
         }
 
-        if (e.ctrlKey && e.key === 's') {
+        if (e.key === 's') {
             e.preventDefault();
             paint.commitStash();
             paint.toLocalStorage();
         }
 
-        if (e.ctrlKey && e.key === 'l') {
+        if (e.key === 'l') {
             e.preventDefault();
             paint.fromLocalStorage();
+            paint.clear();
         }
     });
 
@@ -119,5 +120,22 @@ export function start() {
         }
 
         paint.fromLocalStorage();
+    });
+
+    document.querySelector('.save-button').addEventListener('click', (e) => {
+        e.preventDefault();
+        paint.commitStash();
+        paint.toLocalStorage();
+    });
+
+    document.querySelector('.load-button').addEventListener('click', (e) => {
+        e.preventDefault();
+        paint.fromLocalStorage();
+        paint.clear();
+    });
+
+    document.querySelector('.clear-button').addEventListener('click', (e) => {
+        e.preventDefault();
+        paint.clear();
     });
 }
